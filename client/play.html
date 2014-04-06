@@ -1,0 +1,21 @@
+<head>
+  <title>6.UAP Mahjong Solitaire</title>
+</head>
+<body>
+ {{>container}}
+</body>
+<template name="container">
+{{#if ready}}
+  {{>game}}
+{{else}}
+  {{>main}}
+{{/if}}
+</template>
+
+<template name="main">
+  <div class="container">
+    Welcome! Let's Play!</br>
+    <button class="btn btn-lg btn-primary btn-block new-game">New Game</button>
+  </div>
+</template>
+

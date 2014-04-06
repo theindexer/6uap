@@ -1,0 +1,5 @@
+<template name="game">
+  {{#each tiles}}
+    <div class="tile" style="position:absolute;TOP:{{height x y z}}px;LEFT:{{width x y z}}px;z-index:{{zindex x y z}}"></div>
+  {{/each}}
+</template>

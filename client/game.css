@@ -1,0 +1,10 @@
+.tile {
+  background-image:url("tile.png");
+  background-repeat:no-repeat;
+  background-size:100%;
+  width:50px;
+  height: 68px;
+}
+.active-tile {
+  display:none;
+}
