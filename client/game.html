@@ -1,5 +1,7 @@
 <template name="game">
+  <div class="moves">{{remainingMoves}}</div>
+  <div class="active-tile"></div>
   {{#each tiles}}
-    <div class="tile" style="position:absolute;TOP:{{height x y z}}px;LEFT:{{width x y z}}px;z-index:{{zindex x y z}}"></div>
+    <div class="tile style-{{type}}" style="position:absolute;TOP:{{y_offset x y z}}px;LEFT:{{x_offset x y z}}px;z-index:{{zindex x y z}}"> &nbsp;{{type}}</div>
   {{/each}}
 </template>
