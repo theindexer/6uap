@@ -1,6 +1,10 @@
 Template.container.helpers({
-  ready : function() {
-    return !!Session.get("gameId")
+  //!! is a quick boolean cast
+  ready : function() { //if not loading && gameId obtained
+    return !!!Session.get("loading") && !!Session.get("gameId")
+  },
+  isLoading : function() { //if loading
+    return !!Session.get("loading")
   }
 });
   

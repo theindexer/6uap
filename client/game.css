@@ -1,16 +1,10 @@
 .tile {
-  background-image:url("tile.png");
+  /*background-image:url("tile.png");*/
   background-repeat:no-repeat;
-  background-size:100%;
-  width:50px;
-  height: 68px;
   font-size:18px;
 }
 .active-tile {
   background-color:rgba(255,255,0,.3);
-  z-index:10000;
   position:absolute;
   visibility:hidden;
-  width:46px;
-  height:64px;
 }

@@ -8,7 +8,11 @@
 {{#if ready}}
   {{>game}}
 {{else}}
-  {{>main}}
+  {{#if isLoading}}
+    {{>loading}}
+  {{else}}
+    {{>main}}
+  {{/if}}
 {{/if}}
 </template>
 

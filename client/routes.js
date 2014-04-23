@@ -8,7 +8,11 @@ var Router = Backbone.Router.extend({
   },
 
   loadGame : function(id) {
+    Session.set("loading", true)
     Session.set("gameId", id)
+    Meteor.subscribe("tiles", id, function() {
+      Session.set("loading", false)
+   });
   }
 
 });

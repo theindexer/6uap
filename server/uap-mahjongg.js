@@ -29,3 +29,7 @@ Meteor.methods({
     return gameId;
   }
 });
+
+Meteor.publish('tiles', function(gameId) {
+  return Tiles.find({game:gameId});
+});
