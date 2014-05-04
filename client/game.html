@@ -1,8 +1,21 @@
 <template name="game">
+  {{#if done}}
+    {{>gameover}}
+{{else}} 
+  {{#isolate}}
   <div class="moves">{{remainingMoves}}</div>
+  {{/isolate}}
+  <div class="time"></div>
   {{#each tiles}}
+    {{#isolate}}
     <div class="tile x{{x}}y{{y}}z{{z}}" style="{{css_style type x y z}}"></div>
+    {{/isolate}}
   {{/each}}
   {{relay_tile}}
+  {{#isolate}}
   <div class="active-tile" style="{{active_tile_style}}"></div>
+  {{/isolate}}
+  <button class = "btn btn-primary cheat-lose">Cheat</button>
+  <button class = "btn btn-primary cheat-win">Cheat A lot</button>
+{{/if}}
 </template>

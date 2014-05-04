@@ -10,10 +10,22 @@ Template.container.helpers({
   
 Template.main.events({
   'click .new-game': function(e) {
-    Meteor.call('createGame', function(err, gameId) {
-      MahjonggRouter.navigate("/game/" + gameId, {trigger:"true"});
-    } 
-   )
+    Session.set("loading", true)
+    var tempTiles = []
+    var tempBoard = {}
+    $.getJSON("turtle.json", function(data) {
+      tempTiles = data;
+      _.each(tempTiles, function(tile) {
+      tempBoard[tile] = 1;
+      })
+      resetBoard(tempBoard);
+      for(var i = 0; i < tempTiles.length; i++) {
+        tempTiles[i].push(tempBoard[tempTiles[i]])
+      }
+      Meteor.call('createGame', tempTiles, function(err, gameId) {
+        MahjonggRouter.navigate("/game/" + gameId, {trigger:"true"});
+      })
+    })
   }
 });
 

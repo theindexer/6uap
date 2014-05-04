@@ -1,3 +1,4 @@
+timerHandle = 0
 max_height = 600.0
 max_width = 800.0
 tile_width = 49
@@ -45,8 +46,63 @@ Template.game.helpers({
       "px;height:" + (tile_height-8) * scale.num + "px;"
       return css;
     }
+  },
+  time_remaining : function() {
+    var game = Games.findOne()
+    var time = game.time_started;
+    if(time == -1) {
+      return "Not yet started";
+    }
+    return time;
+  },
+  done : function() {
+    if(Games.findOne().status) {
+      console.log(Games.findOne()._id)
+      return true;
+    }
+    if(numMoves.get() == 0) {
+      var complete = 1
+      if (_.isEmpty(board)) {
+        complete = 2
+      }
+      clearInterval(timerHandle);
+      var time = new Date();
+      time = time.getTime() - get_time().getTime();
+      Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':time}});
+      console.log("woop")
+    }
+  return false;
   }
 });
+
+timer = function() {
+  var started = get_time();
+  if (started == -1) {
+    $(".time").text("Not yet started");
+    return;
+  }
+  var now = new Date();
+  var time = now.getTime() - started.getTime();
+  var seconds = Math.floor(time / 1000);
+  var minutes = Math.floor(seconds / 60);
+  var hours = Math.floor(minutes / 60);
+  minutes = minutes % 60
+  seconds = seconds % 60
+
+  var timeString;
+  if(hours >= 24) {
+    timeString = "Began over a day ago!";
+  } else {
+    timeString = hours > 0 ? (hours + " hour" + (hours > 1 ? "s" : "") + " ") : ""
+    timeString += minutes > 0 ? (minutes + " minute" + (minutes > 1 ? "s" : "") + " ") : ""
+    timeString += seconds > 0 ? (seconds + " second" + (seconds > 1 ? "s" : "") + " ") : ""
+    timeString += "elapsed"
+  }
+  $(".time").text(timeString);
+}
+startTimer = function() {
+  timerHandle = setInterval("timer()", 1000);
+}
 
 //on resize, recompute sizes and invalidate layout
 $(window).resize(function() {
@@ -58,7 +114,10 @@ $(window).resize(function() {
  scale.invalidate()
 
 }); 
-
+var get_time = function() {
+  Games.findOne()
+  return Games.findOne().time_started;
+}
 var y_offset = function(x, y, z) {
   return 50 + scale.get() * (y * (tile_height - 7) / 2 - z * 6);
 };
@@ -88,7 +147,7 @@ activeTiles = {
     this.dep.changed();
   }
 }
-debug = true
+debug = true 
 Template.game.events({
  'click .tile': function(event) {
     //if the tile clicked is free...
@@ -97,12 +156,15 @@ Template.game.events({
       if(activeTiles.get() != null && activeTiles.get()._id != this._id) {
         var activeTile = activeTiles.get()
         //and we're matching types
-        if(this.type == activeTile.type) {
+        if(debug || (this.type == activeTile.type)) {
           //hide the overlay, remove the tiles
           $(".active-tile").css({visibility:"hidden"});
           Tiles.remove(this._id);
           Tiles.remove(activeTile._id);
           activeTiles.set(null);
+          if(get_time() == -1) {
+            Games.update({_id:Session.get("gameId")},{$set:{time_started: new Date()}});
+          }
         } else { //otherwise make this the active tile
           moveActiveTile(this, event);
         }
@@ -110,15 +172,31 @@ Template.game.events({
         moveActiveTile(this, event);
       }
     }  
+  },
+ 'click .cheat-lose': function(event) {
+    var col = Tiles.find()
+    var i = 0
+    col.forEach(function(tile) {
+      if(i < col.count() - 2) {
+        Tiles.remove(tile._id);
+        i++
+      }
+    })
+  },
+ 'click .cheat-win': function(event) {
+    var col = Tiles.find()
+    var i = 0
+    col.forEach(function(tile) {
+      Tiles.remove(tile._id);
+    })
   }
 });
 
 //in meteor version, just moves around activeTile
 function moveActiveTile(tile, event) {
-        activeTiles.set(tile);
+  activeTiles.set(tile);
 }
 board={}
-Tiles = new Meteor.Collection("tiles")
 
 //displays the number of possibilities left
 numMoves = {
@@ -134,7 +212,9 @@ numMoves = {
 }
 //rebuild the board structure on update
 Deps.autorun(function(){
+  if(Session.get("loading")) { return }
   var grid = Tiles.find({"game" : Session.get("gameId")});
+  console.log(grid)
   board={}
   grid.forEach(function(tile) {
     board[[tile.x,tile.y,tile.z]]=tile.type
@@ -148,13 +228,26 @@ Deps.autorun(function(){
       if(!freeSpots[tile.type]) {
         freeSpots[tile.type] = 1;
       } else {
-        console.log(tile)
         numMoves.num += freeSpots[tile.type]++;
       }
     }
   });
   numMoves.invalidate();
-
 });
-
-
+subG = null
+subT = null
+Deps.autorun(function() {
+  //these subs should be stopped automagically but I think my redirects are screwing with them OMG I think I know the solution
+  if(subG) {
+    subG.stop()
+  }
+  if(subT) {
+    subT.stop()
+  }
+  subG = Meteor.subscribe("a-game", Session.get("gameId"), function() {
+    startTimer();
+    subT = Meteor.subscribe("tiles", Session.get("gameId"), function() {
+      Session.set("loading", false)
+    });
+  });
+});
