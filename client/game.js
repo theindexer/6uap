@@ -222,7 +222,11 @@ Deps.autorun(function(){
   freeSpots = {}
   numMoves.num = 0
   grid.cursor_pos = 0;
+  var stillActive = false;
   grid.forEach(function(tile) {
+    if(activeTiles.tiles != null && activeTiles.tiles._id == tile._id) {
+      stillActive = true;
+    }
     var tilearr = [tile.x, tile.y, tile.z];
     if(isFree(tilearr,board)) {
       if(!freeSpots[tile.type]) {
@@ -232,6 +236,7 @@ Deps.autorun(function(){
       }
     }
   });
+  if(!stillActive) { activeTiles.set(null); }
   numMoves.invalidate();
 });
 subG = null
