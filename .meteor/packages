@@ -5,6 +5,5 @@
 
 standard-app-packages
 insecure
-preserve-inputs
 bootstrap-3
 backbone

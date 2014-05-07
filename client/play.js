@@ -20,7 +20,8 @@ Template.main.events({
       })
       resetBoard(tempBoard);
       for(var i = 0; i < tempTiles.length; i++) {
-        tempTiles[i].push(tempBoard[tempTiles[i]])
+        //add style to [x,y,z]
+        tempTiles[i] = tempTiles[i].concat(tempBoard[tempTiles[i]])
       }
       Meteor.call('createGame', tempTiles, function(err, gameId) {
         MahjonggRouter.navigate("/game/" + gameId, {trigger:"true"});

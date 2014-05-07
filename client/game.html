@@ -2,19 +2,20 @@
   {{#if done}}
     {{>gameover}}
 {{else}} 
-  {{#isolate}}
-  <div class="moves">{{remainingMoves}}</div>
-  {{/isolate}}
-  <div class="time"></div>
+  <div class="container">
+    <div class="col-md-2 moves">{{remainingMoves}}</div>
+    <div class="col-md-4 removed">{{removed}} pairs removed</div>
+    <div class="col-md-3 time"></div>
+    <div class="col-md-3 challenge">{{challenge_time}}</div>
+  <div class="board">
   {{#each tiles}}
-    {{#isolate}}
-    <div class="tile x{{x}}y{{y}}z{{z}}" style="{{css_style type x y z}}"></div>
-    {{/isolate}}
+    <div class="tile x{{x}}y{{y}}z{{z}}" style="{{css_style type subtype x y z}}"></div>
   {{/each}}
-  {{relay_tile}}
-  {{#isolate}}
   <div class="active-tile" style="{{active_tile_style}}"></div>
-  {{/isolate}}
+  </div>
+</div>
+  {{relay_tile}}
+  {{rescale}}
   <button class = "btn btn-primary cheat-lose">Cheat</button>
   <button class = "btn btn-primary cheat-win">Cheat A lot</button>
 {{/if}}

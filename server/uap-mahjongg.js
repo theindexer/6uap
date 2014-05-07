@@ -12,6 +12,7 @@ Meteor.methods({
         y:tile[1],
         z:tile[2],
         type:tile[3],
+        subtype:tile[4],
         game : gameId
       }
       Tiles.insert(tempTile)
@@ -23,7 +24,8 @@ Meteor.methods({
       time: new Date(),
       time_started: -1,
       layout: oldGame.layout,
-      original: oldGame._id
+      original: oldGame._id,
+      originalT: oldGame.elapsed
     });
     _.each(oldGame.layout, function(tile) {
       var tempTile = {
@@ -31,14 +33,22 @@ Meteor.methods({
         y:tile[1],
         z:tile[2],
         type:tile[3],
+        subtype:tile[4],
         game : gameId
       }
       Tiles.insert(tempTile)
     });
     console.log(gameId);
     return gameId;
-  } 
- });
+  }, 
+  remove: function(id, id2) {
+    var aTile = Tiles.findOne({_id:id2})
+    if(aTile == null) { return -1 }
+    if(Tiles.remove(id) == 0) { return -1 }
+    Tiles.remove(id2)
+    return 2
+  }
+  });
 Meteor.publish('a-game', function(gameId) {
   return Games.find({_id:gameId});
 });

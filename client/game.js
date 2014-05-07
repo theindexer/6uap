@@ -16,14 +16,17 @@ scale = {
 }
 
 Template.game.helpers({
+  removed: function() {
+    return Session.get("removedTiles");
+  },
   tiles: function() {
     return Tiles.find();
   },
   relay_tile:function() {
     activeTiles.invalidate();
   },
-  css_style: function(type, x, y, z) {
-    return "background:url('tiles-" + type + "-00.png') 0 0/100%;position:absolute;TOP:" +
+  css_style: function(type, subtype, x, y, z) {
+    return "background:url('tiles-" + type + "-0" + (subtype != null ? subtype : 0) + ".png') 0 0/100%;position:absolute;TOP:" +
     y_offset(x, y, z) + "px;LEFT:" + x_offset(x, y, z) +
     "px;z-index:" + zindex(x, y, z)+";width:"+(tile_width * scale.get()) + "px;height:" + (tile_height * scale.get())+"px"
   },  
@@ -69,9 +72,19 @@ Template.game.helpers({
       var time = new Date();
       time = time.getTime() - get_time().getTime();
       Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':time}});
-      console.log("woop")
     }
   return false;
+  },
+  challenge_time: function() {
+    var game = Games.findOne().original
+    if(!game) {
+      return
+    }
+    var time = Games.findOne().originalT
+    return "Time to beat: " + formatTime(getTime(time)) 
+  },
+  rescale: function() {
+    getScale()
   }
 });
 
@@ -83,21 +96,9 @@ timer = function() {
   }
   var now = new Date();
   var time = now.getTime() - started.getTime();
-  var seconds = Math.floor(time / 1000);
-  var minutes = Math.floor(seconds / 60);
-  var hours = Math.floor(minutes / 60);
-  minutes = minutes % 60
-  seconds = seconds % 60
-
-  var timeString;
-  if(hours >= 24) {
-    timeString = "Began over a day ago!";
-  } else {
-    timeString = hours > 0 ? (hours + " hour" + (hours > 1 ? "s" : "") + " ") : ""
-    timeString += minutes > 0 ? (minutes + " minute" + (minutes > 1 ? "s" : "") + " ") : ""
-    timeString += seconds > 0 ? (seconds + " second" + (seconds > 1 ? "s" : "") + " ") : ""
-    timeString += "elapsed"
-  }
+  var timeString = formatTime(getTime(time))
+  timeString += "elapsed"
+  
   $(".time").text(timeString);
 }
 startTimer = function() {
@@ -106,14 +107,16 @@ startTimer = function() {
 
 //on resize, recompute sizes and invalidate layout
 $(window).resize(function() {
+  getScale()
+});
+var getScale = function() {
  var width = $(window).width();
  var height = $(window).height();
  var w_scale = Math.min(1, width/max_width);
  var h_scale = Math.min(1, height/max_height);
  scale.num = Math.min(w_scale, h_scale);
  scale.invalidate()
-
-}); 
+} 
 var get_time = function() {
   Games.findOne()
   return Games.findOne().time_started;
@@ -147,7 +150,7 @@ activeTiles = {
     this.dep.changed();
   }
 }
-debug = true 
+debug = true
 Template.game.events({
  'click .tile': function(event) {
     //if the tile clicked is free...
@@ -159,8 +162,12 @@ Template.game.events({
         if(debug || (this.type == activeTile.type)) {
           //hide the overlay, remove the tiles
           $(".active-tile").css({visibility:"hidden"});
-          Tiles.remove(this._id);
-          Tiles.remove(activeTile._id);
+          Meteor.call("remove", this._id, activeTile._id, function(err, result) {
+          if(!err && result != -1) {
+            Session.set("removedTiles",Session.get("removedTiles") + 1)
+          }});
+          //Tiles.remove(this._id);
+          //Tiles.remove(activeTile._id);
           activeTiles.set(null);
           if(get_time() == -1) {
             Games.update({_id:Session.get("gameId")},{$set:{time_started: new Date()}});
@@ -242,7 +249,7 @@ Deps.autorun(function(){
 subG = null
 subT = null
 Deps.autorun(function() {
-  //these subs should be stopped automagically but I think my redirects are screwing with them OMG I think I know the solution
+  //these subs should be stopped automagically but I think my redirects are screwing with them
   if(subG) {
     subG.stop()
   }

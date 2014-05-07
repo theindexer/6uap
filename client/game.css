@@ -8,3 +8,7 @@
   position:absolute;
   visibility:hidden;
 }
+
+.board {
+  position:relative;
+}
