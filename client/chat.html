@@ -1,0 +1,12 @@
+<template name="chat">
+  <div class="chat" style="{{chat_style}}">
+    <div class="message-area">
+      {{#each messages}}
+	User: {{content}} <br/>
+      {{/each}}
+    </div>
+    <div class="typing-area">
+      <input type="text" name="msgtext" class="msgtext"/>
+    </div>
+  </div>
+</template>

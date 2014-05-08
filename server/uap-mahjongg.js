@@ -56,3 +56,7 @@ Meteor.publish('a-game', function(gameId) {
 Meteor.publish('tiles', function(gameId) {
   return Tiles.find({game:gameId});
 });
+
+Meteor.publish('chats', function(gameId) {
+  return Chats.find({game:gameId})
+});

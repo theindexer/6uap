@@ -3,20 +3,29 @@
     {{>gameover}}
 {{else}} 
   <div class="container">
-    <div class="col-md-2 moves">{{remainingMoves}}</div>
-    <div class="col-md-4 removed">{{removed}} pairs removed</div>
-    <div class="col-md-3 time"></div>
-    <div class="col-md-3 challenge">{{challenge_time}}</div>
-  <div class="board">
-  {{#each tiles}}
-    <div class="tile x{{x}}y{{y}}z{{z}}" style="{{css_style type subtype x y z}}"></div>
-  {{/each}}
-  <div class="active-tile" style="{{active_tile_style}}"></div>
+    <div class="row">
+      <div class="col-md-2 moves">{{remainingMoves}}</div>
+      <div class="col-md-4 removed">{{removed}} pairs removed</div>
+      <div class="col-md-3 time"></div>
+      <div class="col-md-3 challenge">{{challenge_time}}</div>
+    </div>
+    <div class="floater">
+      <div class="board" style="{{board_style}}">
+	{{#each tiles}}
+	<div class="tile x{{x}}y{{y}}z{{z}}" style="{{css_style type subtype x y z}}"></div>
+	{{/each}}
+	<div class="active-tile" style="{{active_tile_style}}"></div>
+      </div>
+      {{>chat}}
+    </div>
+    <div class="footer"> 
+      Share this URL to play this game with your friends!
+      <input class="share-link" type="text" value="{{share_link}}" title="Click and press cmd or ctrl + c to copy" readonly=1 onclick="this.select();"/>
+      {{relay_tile}}
+      {{rescale}}
+      <button class = "btn btn-primary cheat-lose">Cheat</button>
+      <button class = "btn btn-primary cheat-win">Cheat A lot</button>
+    </div>
   </div>
-</div>
-  {{relay_tile}}
-  {{rescale}}
-  <button class = "btn btn-primary cheat-lose">Cheat</button>
-  <button class = "btn btn-primary cheat-win">Cheat A lot</button>
 {{/if}}
 </template>

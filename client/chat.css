@@ -1,0 +1,14 @@
+.chat {
+  margin-top:25px;
+  width:300px;
+  float:left;
+  padding-bottom:50px;
+  position:relative;
+}
+
+.message-area {
+  max-height:90%;
+  overflow-y:scroll;
+  padding-bottom:20px;
+}
+

@@ -3,6 +3,7 @@ max_height = 600.0
 max_width = 800.0
 tile_width = 49
 tile_height = 68
+padding = 25
 scale = {
   dep: new Deps.Dependency,
   num: 1.0,
@@ -16,6 +17,13 @@ scale = {
 }
 
 Template.game.helpers({
+  board_style: function() {
+    return "width:" + (padding + tile_width * scale.get() * 15) + "px;height:" +
+    (padding + 20 + 7 + (tile_height - 7) * scale.get() * 8) + "px"
+  },
+  share_link: function() {
+    return window.location.host + "/#game/" + Games.findOne()._id
+  },
   removed: function() {
     return Session.get("removedTiles");
   },
@@ -122,10 +130,10 @@ var get_time = function() {
   return Games.findOne().time_started;
 }
 var y_offset = function(x, y, z) {
-  return 50 + scale.get() * (y * (tile_height - 7) / 2 - z * 6);
+  return padding + scale.get() * (y * (tile_height - 7) / 2 - z * 6);
 };
 var x_offset = function(x, y, z) {
-   return 50 + scale.get() * (x * (tile_width - 6) / 2 + z * 5);
+   return padding + scale.get() * (x * (tile_width - 6) / 2 + z * 5);
 };
 var zindex = function(x,y,z) {
   return z * 1000 - x*50 + 50 * y
@@ -150,7 +158,7 @@ activeTiles = {
     this.dep.changed();
   }
 }
-debug = true
+debug = false
 Template.game.events({
  'click .tile': function(event) {
     //if the tile clicked is free...
@@ -263,3 +271,7 @@ Deps.autorun(function() {
     });
   });
 });
+
+Deps.autorun(function() {
+  Meteor.subscribe("chats", Session.get("gameId"));
+})
