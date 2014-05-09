@@ -33,7 +33,12 @@ Template.game.helpers({
   relay_tile:function() {
     activeTiles.invalidate();
   },
-  css_style: function(type, subtype, x, y, z) {
+  css_style: function() {
+    var type = this.type
+    var subtype = this.subtype
+    var x = this.x
+    var y = this.y
+    var z = this.z
     return "background:url('tiles-" + type + "-0" + (subtype != null ? subtype : 0) + ".png') 0 0/100%;position:absolute;TOP:" +
     y_offset(x, y, z) + "px;LEFT:" + x_offset(x, y, z) +
     "px;z-index:" + zindex(x, y, z)+";width:"+(tile_width * scale.get()) + "px;height:" + (tile_height * scale.get())+"px"
@@ -136,7 +141,7 @@ var x_offset = function(x, y, z) {
    return padding + scale.get() * (x * (tile_width - 6) / 2 + z * 5);
 };
 var zindex = function(x,y,z) {
-  return z * 1000 - x*50 + 50 * y
+  return 10000 + z * 1000 - x*50 + 50 * y
 };
 var tileX = function(type) {
   return -64 * type;
@@ -160,6 +165,9 @@ activeTiles = {
 }
 debug = false
 Template.game.events({
+ 'click' : function(event) {
+    console.log(event)
+  },
  'click .tile': function(event) {
     //if the tile clicked is free...
     if(debug || isFree([this.x,this.y,this.z], board)) {

@@ -4,6 +4,16 @@ Template.chat.helpers({
   },
   chat_style: function() {
     return "height:" + (8 * (tile_height - 7) * scale.get() + 7) + "px"
+  },
+  who_said: function() {
+    if (Meteor.userId()==this.user) {
+      return "Me";
+    } else {
+      return "Others";
+    }
+  },
+  msg_class: function() {
+    return Meteor.userId() == this.user ? "self-said" : "other-said";
   }
 })
 
@@ -17,6 +27,7 @@ Template.chat.events({
       var chatObj = {
         content:msg,
         timestamp: Date.now(),
+        user:Meteor.userId(),
         game:Session.get("gameId")
       }
       Chats.insert(chatObj)

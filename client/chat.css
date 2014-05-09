@@ -1,6 +1,6 @@
 .chat {
   margin-top:25px;
-  width:300px;
+  min-width:300px;
   float:left;
   padding-bottom:50px;
   position:relative;
@@ -12,3 +12,12 @@
   padding-bottom:20px;
 }
 
+.self-said {
+  background-color:#00CC00;
+  font-weight:bold;
+}
+
+.other-said {
+  background-color:#0033FF;
+  font-weight:bold;
+}

@@ -2,7 +2,7 @@
   <div class="chat" style="{{chat_style}}">
     <div class="message-area">
       {{#each messages}}
-	User: {{content}} <br/>
+	<span class="{{msg_class}}">{{who_said}}</span>: {{content}} <br/>
       {{/each}}
     </div>
     <div class="typing-area">

@@ -7,3 +7,6 @@ standard-app-packages
 insecure
 bootstrap-3
 backbone
+accounts-base
+accounts-guest
+accounts-password

@@ -17,6 +17,7 @@ html,body {
   position:relative;
   padding-bottom:30px;
   float:left;
+  overflow:none;
 }
 
 .container {
