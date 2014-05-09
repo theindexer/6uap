@@ -24,8 +24,8 @@ Template.game.helpers({
   share_link: function() {
     return window.location.host + "/#game/" + Games.findOne()._id
   },
-  removed: function() {
-    return Session.get("removedTiles");
+  userid: function() {
+    return Meteor.userId();
   },
   tiles: function() {
     return Tiles.find();
@@ -64,12 +64,7 @@ Template.game.helpers({
     }
   },
   time_remaining : function() {
-    var game = Games.findOne()
-    var time = game.time_started;
-    if(time == -1) {
-      return "Not yet started";
-    }
-    return time;
+    return timer_time.get()
   },
   done : function() {
     if(Games.findOne().status) {
@@ -100,19 +95,30 @@ Template.game.helpers({
     getScale()
   }
 });
+timer_time = {
+  time:"Not yet started",
+  dep: new Deps.Dependency,
+  set: function(timeString) {
+    this.time = timeString;
+    this.dep.changed()
+  },
+  get: function() {
+    this.dep.depend();
+    return this.time;
+  }
+}
 
 timer = function() {
   var started = get_time();
   if (started == -1) {
-    $(".time").text("Not yet started");
+    timer_time.set("Not yet started");
     return;
   }
   var now = new Date();
   var time = now.getTime() - started.getTime();
   var timeString = formatTime(getTime(time))
   timeString += "elapsed"
-  
-  $(".time").text(timeString);
+  timer_time.set(timeString);
 }
 startTimer = function() {
   timerHandle = setInterval("timer()", 1000);
@@ -177,9 +183,19 @@ Template.game.events({
         //and we're matching types
         if(debug || (this.type == activeTile.type)) {
           //hide the overlay, remove the tiles
-          $(".active-tile").css({visibility:"hidden"});
           Meteor.call("remove", this._id, activeTile._id, function(err, result) {
           if(!err && result != -1) {
+            var myScore = Scores.findOne({user:Meteor.userId()})
+            if(!myScore) {
+              var scoreObj = {
+                game:Session.get("gameId"),
+                user:Meteor.userId(),
+                score:1
+              }
+              Scores.insert(scoreObj)
+            } else {
+              Scores.update(myScore._id,{$inc:{score:1}});
+            }
             Session.set("removedTiles",Session.get("removedTiles") + 1)
           }});
           //Tiles.remove(this._id);
@@ -282,4 +298,5 @@ Deps.autorun(function() {
 
 Deps.autorun(function() {
   Meteor.subscribe("chats", Session.get("gameId"));
+  Meteor.subscribe("scores", Session.get("gameId"));
 })

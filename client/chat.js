@@ -14,6 +14,9 @@ Template.chat.helpers({
   },
   msg_class: function() {
     return Meteor.userId() == this.user ? "self-said" : "other-said";
+  },
+  scores: function() {
+    return Scores.find({},{sort:{score:-1}})
   }
 })
 

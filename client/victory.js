@@ -5,6 +5,10 @@ Template.victory.helpers({
   },
   link: function() {
     return get_link();
+  },
+  hiscore : function() {
+    var hiscore = Scores.findOne({},{sort:{score:-1}})
+    return hiscore.user + " scored the most with " + hiscore.score + " pairs removed!"
   }
 })
 

@@ -60,3 +60,7 @@ Meteor.publish('tiles', function(gameId) {
 Meteor.publish('chats', function(gameId) {
   return Chats.find({game:gameId})
 });
+
+Meteor.publish('scores', function(gameId) {
+  return Scores.find({game:gameId})
+});
