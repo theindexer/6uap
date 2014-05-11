@@ -9,6 +9,9 @@ Template.victory.helpers({
   hiscore : function() {
     var hiscore = Scores.findOne({},{sort:{score:-1}})
     return hiscore.user + " scored the most with " + hiscore.score + " pairs removed!"
+  },
+  your_score: function() {
+    return Scores.findOne({user:Meteor.userId()}).score
   }
 })
 
