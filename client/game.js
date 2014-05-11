@@ -248,7 +248,7 @@ numMoves = {
 }
 //rebuild the board structure on update
 Deps.autorun(function(){
-  if(Session.get("loading")) { return }
+  if(!Session.get("gameId") || Session.get("loading")) { return }
   var grid = Tiles.find({"game" : Session.get("gameId")});
   board={}
   grid.forEach(function(tile) {
@@ -273,7 +273,6 @@ Deps.autorun(function(){
   });
   if(!stillActive) { activeTiles.set(null); }
   if((grid.count() % 2 ==0) &&numMoves.num == 0) {
-    console.log(grid.count() + "f u")
     Session.set("gameover",true);
   }
   numMoves.invalidate();
@@ -281,6 +280,7 @@ Deps.autorun(function(){
 subG = null
 subT = null
 Deps.autorun(function() {
+  if(Session.get("gameId")) {
   //these subs should be stopped automagically but I think my redirects are screwing with them
   if(subG) {
     subG.stop()
@@ -294,6 +294,7 @@ Deps.autorun(function() {
       Session.set("loading", false)
     });
   });
+  }
 });
 
 Deps.autorun(function() {
