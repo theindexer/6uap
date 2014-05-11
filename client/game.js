@@ -22,13 +22,13 @@ Template.game.helpers({
     (padding + 20 + 7 + (tile_height - 7) * scale.get() * 8) + "px"
   },
   share_link: function() {
-    return window.location.host + "/#game/" + Games.findOne()._id
+    return window.location.host + "/#game/" + Session.get("gameId")
   },
   userid: function() {
     return Meteor.userId();
   },
   tiles: function() {
-    return Tiles.find();
+    return Tiles.find({game:Session.get("gameId")});
   },
   relay_tile:function() {
     activeTiles.invalidate();
@@ -67,7 +67,7 @@ Template.game.helpers({
     return timer_time.get()
   },
   done : function() {
-    if(Session.get("gameover") && !Games.findOne().status) {
+    if(Session.get("gameover") && !Games.findOne(Session.get("gameId")).status) {
       var complete = 1
       if (_.isEmpty(board)) {
         complete = 2
@@ -76,17 +76,17 @@ Template.game.helpers({
       var time = new Date();
       time = time.getTime() - get_time().getTime();
       Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':time}});
-    } else if (Games.findOne().status) { 
+    } else if (Games.findOne(Session.get("gameId")).status) { 
       return true;
     }
     return false;
   },
   challenge_time: function() {
-    var game = Games.findOne().original
+    var game = Games.findOne(Session.get("gameId")).original
     if(!game) {
       return
     }
-    var time = Games.findOne().originalT
+    var time = Games.findOne(Session.get("gameId")).originalT
     return "Time to beat: " + formatTime(getTime(time)) 
   },
   rescale: function() {
@@ -135,8 +135,7 @@ var getScale = function() {
  scale.invalidate()
 } 
 var get_time = function() {
-  Games.findOne()
-  return Games.findOne().time_started;
+  return Games.findOne(Session.get("gameId")).time_started;
 }
 var y_offset = function(x, y, z) {
   return padding + scale.get() * (y * (tile_height - 7) / 2 - z * 6);
@@ -183,7 +182,7 @@ Template.game.events({
           //hide the overlay, remove the tiles
           Meteor.call("remove", this._id, activeTile._id, function(err, result) {
           if(!err && result != -1) {
-            var myScore = Scores.findOne({user:Meteor.userId()})
+            var myScore = Scores.findOne({game:Session.get("gameId"),user:Meteor.userId()})
             if(!myScore) {
               var scoreObj = {
                 game:Session.get("gameId"),
