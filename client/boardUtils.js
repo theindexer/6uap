@@ -47,10 +47,10 @@ resetBoard = function(aBoard) {
           var style = tileGroups[currentTile]
           if(style == 34) {  //flower
             aBoard[tiles[pairing]] = [34,flower++]
-            aBoard[tiles[pairing]] = [34,flower++]
+            aBoard[tiles[i]] = [34,flower++]
           } else if (style == 35) { //season
             aBoard[tiles[pairing]] = [35,season++]
-            aBoard[tiles[pairing]] = [35,season++]
+            aBoard[tiles[i]] = [35,season++]
           } else {
             aBoard[tiles[pairing]] = [tileGroups[currentTile]];
             aBoard[tiles[i]] = [tileGroups[currentTile]];

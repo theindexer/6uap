@@ -67,11 +67,7 @@ Template.game.helpers({
     return timer_time.get()
   },
   done : function() {
-    if(Games.findOne().status) {
-      console.log(Games.findOne()._id)
-      return true;
-    }
-    if(numMoves.get() == 0) {
+    if(Session.get("gameover") && !Games.findOne().status) {
       var complete = 1
       if (_.isEmpty(board)) {
         complete = 2
@@ -80,8 +76,10 @@ Template.game.helpers({
       var time = new Date();
       time = time.getTime() - get_time().getTime();
       Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':time}});
+    } else if (Games.findOne().status) { 
+      return true;
     }
-  return false;
+    return false;
   },
   challenge_time: function() {
     var game = Games.findOne().original
@@ -253,7 +251,6 @@ numMoves = {
 Deps.autorun(function(){
   if(Session.get("loading")) { return }
   var grid = Tiles.find({"game" : Session.get("gameId")});
-  console.log(grid)
   board={}
   grid.forEach(function(tile) {
     board[[tile.x,tile.y,tile.z]]=tile.type
@@ -276,6 +273,10 @@ Deps.autorun(function(){
     }
   });
   if(!stillActive) { activeTiles.set(null); }
+  if((grid.count() % 2 ==0) &&numMoves.num == 0) {
+    console.log(grid.count() + "f u")
+    Session.set("gameover",true);
+  }
   numMoves.invalidate();
 });
 subG = null

@@ -5,6 +5,8 @@ Template.container.helpers({
   },
   isLoading : function() { //if loading
     return !!Session.get("loading")
+  },
+  recentGames: function() {
   }
 });
   
