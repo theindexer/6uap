@@ -64,3 +64,40 @@ Meteor.publish('chats', function(gameId) {
 Meteor.publish('scores', function(gameId) {
   return Scores.find({game:gameId})
 });
+
+Meteor.publish('recentGames', function() {
+  return Games.find({'status':2},{sort:{finished:-1},limit:8})
+})
+
+//var gameOver = Games.find()
+//get phantomjs to work?
+/*gameOver.observeChanges({
+  changed: function(id, fields) {
+    if (fields['status'] == 2) {
+      var page = Npm.require('phantomjs').create();
+      page.viewportSize = { width:300, height:300 };
+      page.content='<html><body><canvas id="canvas"></canvas></body></html>'
+      page.evaluate(function() {
+        var tiles = Games.find(id).layout;
+        tiles = _.sortBy(tiles, function(tile) { return 10000 + tile[2] * 1000 - tile[0] *50 + 50 * tile[1] })
+        var canvas = document.getElementById('canvas')
+        canvas.width=300;
+        canvas.height=300;
+	ctx = canvas.getContext('2d');
+	var drawn = 0
+	tiles.forEach(function(tile) {
+	  var image = new Image();
+	  var x = tile[0]; var y = tile[1]; var z = tile[2]
+	  image.onload = function() {
+	    drawn++
+	    ctx.drawImage(image, x*36/2 + 4*z, y*55/2-z*5,40,60)
+	    if(drawn == 144) {
+	      return canvas.toDataURL()
+	    }
+	  }
+	image.src = "tiles-" + tile[3] + "-00.png"
+        })
+      })
+    }
+  }
+});*/

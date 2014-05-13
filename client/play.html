@@ -17,10 +17,24 @@
 </template>
 
 <template name="main">
-  <div class="container">
+  <div class="container-fluid">
+    <div class="welcome">
     Welcome! Let's Play!<br/>
     <button class="btn btn-lg btn-primary btn-block new-game">New Game</button><br/>
-    
+    </div>
+    <div>
+    <h4>Here are some recent games - click to challenge their times!</h4>
+    {{#each recentGames}}
+      <div class="row">
+      {{#each row}}
+        <div class="col-md-3 col-sm-4 col-xs-6 featurebox">
+          Took {{challenge_time}}<br/>
+          <a href="#challenge/{{_id}}"><img width=200 height=200 src="{{screenshot}}"/></a>
+        </div>
+      {{/each}}
+      </div>
+    {{/each}}
+    </div>
   </div>
 </template>
 

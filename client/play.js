@@ -5,11 +5,28 @@ Template.container.helpers({
   },
   isLoading : function() { //if loading
     return !!Session.get("loading")
-  },
-  recentGames: function() {
   }
 });
-  
+ 
+Template.main.helpers({
+  recentGames: function() {
+    var cursor = Games.find();
+    var temp = []
+    var grid = []
+    cursor.forEach(function(game) {
+      temp.push(game)
+    });
+    while(temp.lenth > 4) {
+      grid.push({'row':temp.slice(0,4)})
+    }
+    grid.push({'row':temp})
+    return grid;
+  },
+  challenge_time: function() {
+    return formatTime(getTime(this.elapsed))
+  }
+});
+ 
 Template.main.events({
   'click .new-game': function(e) {
     Session.set("loading", true)

@@ -4,8 +4,10 @@ var Router = Backbone.Router.extend({
     "game/:id" : 'loadGame',
     "challenge/:id" : 'challengeGame'
   },
-
+  recentSub:null,
   home : function() {
+    Meteor.subscribe('recentGames');
+    Session.set("gameId", null)
   },
 
   loadGame : function(id) {

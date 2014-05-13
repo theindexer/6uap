@@ -74,8 +74,9 @@ Template.game.helpers({
       }
       clearInterval(timerHandle);
       var time = new Date();
-      time = time.getTime() - get_time().getTime();
-      Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':time}});
+      var elapsed = time.getTime() - get_time().getTime();
+      takeScreenshot(Session.get("gameId"))
+      Games.update(Session.get("gameId"), {$set:{'status':complete,'elapsed':elapsed,'finished':time.getTime()}});
     } else if (Games.findOne(Session.get("gameId")).status) { 
       return true;
     }
@@ -249,11 +250,13 @@ numMoves = {
 //rebuild the board structure on update
 Deps.autorun(function(){
   if(!Session.get("gameId") || Session.get("loading")) { return }
+  startWatch()
   var grid = Tiles.find({"game" : Session.get("gameId")});
   board={}
   grid.forEach(function(tile) {
     board[[tile.x,tile.y,tile.z]]=tile.type
   });
+  stopWatch()
   freeSpots = {}
   numMoves.num = 0
   grid.cursor_pos = 0;
